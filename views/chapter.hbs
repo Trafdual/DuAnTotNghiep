@@ -1,16 +1,22 @@
 <!DOCTYPE>
 <html>
 
-<head>
-    <title>Chapter</title>
-<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <style>
+    <head>
+        <title>Chapter</title>
+        <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css'
+            rel='stylesheet'>
+        <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+        <script
+            src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <style>
         @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
         * {
@@ -639,80 +645,110 @@
             }
         }
     </style>
-</head>
+    </head>
 
-<body>
-    <div class="jumbotron text-center">
-        <h1>Chapter</h1>
-        <form method="get" action="/addchap?userId={{userId}}">
-            <button type="submit">Thêm chap</button>
-        </form>
-        <hr>
-        <h2>Danh sách chap</h2> 
-        <br>
-        <div class="table-data">
-            <div class="order">
-                <table class="table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th style="text-align: center;">Manga Name</th>
-                            <th style="text-align: center;">Chapter Quantity</th>
-                            <th style="text-align: center;">Status</th>
-                            <th style="text-align: center;">Price</th>
-                            <th style="text-align: center;">Option</th>
-                        </tr>
-                    </thead>
+    <body>
+        <div class="jumbotron text-center">
+            <h1>Chapter</h1>
+            <form method="get" action="/addchap?userId={{userId}}">
+                <button type="submit">Thêm chap</button>
+            </form>
+            <hr>
+            <h2>Danh sách chap</h2>
+            <br>
+            <div class="table-data">
+                <div class="order">
+                    <table class="table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th style="text-align: center;">Manga Name</th>
+                                <th style="text-align: center;">Chapter
+                                    Quantity</th>
+                                <th style="text-align: center;">Status</th>
+                                <th style="text-align: center;">Price</th>
+                                <th style="text-align: center;">Option</th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                        {{#each data}}
-                        <tr>
-                            <td style="text-align: center;">{{this.mangaName}}</td>
-                            <td style="text-align: center;">{{this.number}}</td>
-                            <td style="text-align: center;">{{this.viporfree}}</td>
-                            <td style="text-align: center;">{{this.price}}</td>
-                            <td>
-                                <form style="margin-top: 10px;" action="/chapterput/{{_id}}" method="get">
+                        <tbody>
+                            {{#each data}}
+                            <tr>
+                                <td
+                                    style="text-align: center;">{{this.mangaName}}</td>
+                                <td
+                                    style="text-align: center;">{{this.number}}</td>
+                                <td
+                                    style="text-align: center;">{{this.viporfree}}</td>
+                                <td
+                                    style="text-align: center;">{{this.price}}</td>
+                                <td>
+                                    <form style="margin-top: 10px;"
+                                        action="/chapterput/{{_id}}"
+                                        method="get">
+                                        <button
+                                            style="width: 100px; height: 30px; margin-top: 5px; background-color: #1E90FF; border: none; border-radius: 5px; color: white;"
+                                            type="submit">Edit</button>
+                                    </form>
+                                    <form style="margin-top: 10dp;"
+                                        action="/chapterdelete/{{this._id}}"
+                                        onclick="return confirm('Bạn có muốn xóa không')"
+                                        method="post">
+                                        <button
+                                            style="width: 100px; height:30px;  margin-top: 5px; background-color:#FF0000 ; border: none; border-radius: 5px; color: white;"
+                                            type="submit">Delete</button>
+                                    </form>
                                     <button
-                                        style="width: 100px; height: 30px; margin-top: 5px; background-color: #1E90FF; border: none; border-radius: 5px; color: white;"
-                                        type="submit">Edit</button>
-                                </form>
-                                <form style="margin-top: 10dp;" action="/chapterdelete/{{this._id}}"
-                                    onclick="return confirm('Bạn có muốn xóa không')" method="post">
-                                    <button
-                                        style="width: 100px; height:30px;  margin-top: 5px; background-color:#FF0000 ; border: none; border-radius: 5px; color: white;"
-                                        type="submit">Delete</button>
-                                </form>
-                                <button
-                                    style="margin-top: 10px;width: 100px; height:30px; background-color:#ecb305 ; border: none; border-radius: 5px; color: white;"
-                                    class="detail-button" data-chapter-id="{{this._id}}">Chi tiết</button>
-                                <div id="image-modal" class="modal fade" role="dialog" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h4 class="modal-title">Danh sách ảnh chương</h4>
-                                                <button type="button" class="close"
-                                                    data-dismiss="modal" aria-label="Close">
-                                                   <span aria-hidden="true">&times;</span>
+                                        style="margin-top: 10px;width: 100px; height:30px; background-color:#ecb305 ; border: none; border-radius: 5px; color: white;"
+                                        class="detail-button"
+                                        data-chapter-id="{{this._id}}">Chi
+                                        tiết</button>
+                                    <div id="image-modal" class="modal fade"
+                                        role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog"
+                                            role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">Danh
+                                                        sách ảnh chương</h4>
+                                                    <button type="button"
+                                                        class="close"
+                                                        data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span
+                                                            aria-hidden="true">&times;</span>
                                                     </button>
-                                            </div>
-                                            <div class="modal-body">
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-default"
-                                                    data-dismiss="modal">Đóng</button>
+                                                </div>
+                                                <div class="modal-body">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button"
+                                                        class="btn btn-default"
+                                                        data-dismiss="modal">Đóng</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                    <div class="pagination"
+                        style="text-align:center; margin-top: 20px;">
+                        {{#if totalPages}}
+                        {{#each (range 1 totalPages)}}
+                        <a href="/getchap?page={{this}}"
+                            style="margin: 0 5px; {{#if (isEqual this ../currentPage)}}font-weight:bold;{{/if}}">
+                            {{this}}
+                        </a>
                         {{/each}}
-                    </tbody>
-                </table>
+                        {{/if}}
+                    </div>
+
+                </div>
             </div>
         </div>
-    </div>
-    <script>
+        <script>
         function setupChapterPage() {
             const chapterDetailButtons = document.querySelectorAll('.detail-button');
 
@@ -755,6 +791,6 @@
             });
         })
     </script>
-</body>
+    </body>
 
 </html>
