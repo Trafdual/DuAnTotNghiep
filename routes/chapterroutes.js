@@ -50,6 +50,118 @@ router.get('/getchap', async (req, res) => {
   }
 })
 
+router.get('/getchapnew/:userid', async (req, res) => {
+  try {
+    const userId = req.params.userid
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
+
+    const user = await User.findById(userId).lean().select('role')
+    if (!user) {
+      return res.status(403).json({ message: 'Không tìm thấy user' })
+    }
+
+    let query = { isChap: true }
+
+    if (user.role !== 'admin') {
+      const mangaNames = await Manga.find({ userID: userId })
+        .lean()
+        .select('manganame')
+        .then(list => list.map(m => m.manganame))
+
+      if (mangaNames.length === 0) {
+        return res.json({ data: [], currentPage: page, totalPages: 0 })
+      }
+
+      query.mangaName = { $in: mangaNames }
+    }
+
+    const [totalCount, chapters] = await Promise.all([
+      Chapter.countDocuments(query),
+      Chapter.find(query)
+        .select('mangaName number viporfree price isChap images')
+        .sort({ mangaName: 1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+    ])
+
+    const totalPages = Math.ceil(totalCount / limit)
+
+    return res.json({
+      data: chapters,
+      currentPage: page,
+      totalPages
+    })
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách chap:', error)
+    return res
+      .status(500)
+      .json({ error: 'Đã xảy ra lỗi khi lấy danh sách chap.' })
+  }
+})
+
+router.get('/searchchap/:userid', async (req, res) => {
+  try {
+    const userId = req.params.userid
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
+    const search = req.query.search?.trim() // Tên truyện cần tìm
+
+    const user = await User.findById(userId).lean().select('role')
+    if (!user) {
+      return res.status(403).json({ message: 'Không tìm thấy user' })
+    }
+
+    let query = { isChap: true }
+
+    if (user.role !== 'admin') {
+      const mangaNames = await Manga.find({ userID: userId })
+        .lean()
+        .select('manganame')
+        .then(list => list.map(m => m.manganame))
+
+      if (mangaNames.length === 0) {
+        return res.json({ data: [], currentPage: page, totalPages: 0 })
+      }
+
+      query.mangaName = { $in: mangaNames }
+    }
+
+    // Nếu có tìm kiếm theo tên truyện
+    if (search) {
+      const regex = new RegExp(search, 'i') // không phân biệt hoa thường
+      query.mangaName = query.mangaName
+        ? { $in: query.mangaName.$in.filter(name => regex.test(name)) }
+        : { $regex: regex }
+    }
+
+    const [totalCount, chapters] = await Promise.all([
+      Chapter.countDocuments(query),
+      Chapter.find(query)
+        .select('mangaName number viporfree price isChap images')
+        .sort({ mangaName: 1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+    ])
+
+    const totalPages = Math.ceil(totalCount / limit)
+
+    return res.json({
+      data: chapters,
+      currentPage: page,
+      totalPages
+    })
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách chap:', error)
+    return res
+      .status(500)
+      .json({ error: 'Đã xảy ra lỗi khi lấy danh sách chap.' })
+  }
+})
 
 router.get('/chap', async (req, res) => {
   try {
@@ -192,6 +304,72 @@ router.post('/chapters', async (req, res) => {
   }
 })
 
+router.post('/chaptersnew/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId
+    const { mangaName, number, viporfree, images } = req.body
+    const user = await User.findById(userId)
+    if (!userId || typeof userId !== 'string') {
+      return res.status(403).json({ message: 'Không có id.' })
+    }
+    if (!user) {
+      return res.status(403).json({ message: 'Không tìm thấy user.' })
+    }
+
+    const imageArray = images.split('\n')
+
+    const manga = await Manga.findOne({ manganame: mangaName })
+    if (!manga) {
+      return res
+        .status(404)
+        .json({ message: 'Không tìm thấy truyện liên quan đến chương này.' })
+    }
+
+    const chapter = new Chapter({
+      mangaName,
+      number,
+      viporfree,
+      images: imageArray
+    })
+    if (user.role === 'nhomdich') {
+      const notification = new Notification({
+        adminId: '653a20c611295a22062661f9',
+        title: 'Duyệt thêm chap',
+        content: `Chap ${number} - Truyện ${mangaName} cần được duyệt.`,
+        userId: userId,
+        mangaId: chapter._id
+      })
+      await notification.save()
+      if (chapter.viporfree === 'free') {
+        chapter.price = 0
+      } else {
+        chapter.price = 2
+      }
+      chapter.isChap = false
+      await chapter.save()
+      manga.chapters.push(chapter._id)
+      await manga.save()
+      res.json({
+        message: 'Chap của bạn đã thêm thành công và đang đợi xét duyệt'
+      })
+    } else {
+      if (chapter.viporfree === 'free') {
+        chapter.price = 0
+      } else {
+        chapter.price = 2
+      }
+      chapter.isChap = true
+      await chapter.save()
+      manga.chapters.push(chapter._id)
+      await manga.save()
+      res.json({ message: 'Thêm chap thành công' })
+    }
+  } catch (error) {
+    console.error('Lỗi khi tạo chương:', error)
+    res.status(500).json({ error: 'Đã xảy ra lỗi khi tạo chương' })
+  }
+})
+
 router.post('/chapterput/:_id', async (req, res) => {
   try {
     const userId = req.session.userId
@@ -253,6 +431,73 @@ router.post('/chapterput/:_id', async (req, res) => {
         (chapter.isChap = true)
       await chapter.save()
       res.render('successadmin', { message: 'Chap sửa thành công' })
+    }
+  } catch (error) {
+    console.error('Lỗi khi cập nhật chương:', error)
+    res.status(500).json({ error: 'Đã xảy ra lỗi khi cập nhật chương' })
+  }
+})
+
+router.post('/chapterputnew/:_id/:userid', async (req, res) => {
+  try {
+    const userId = req.params.userid
+    const user = await User.findById(userId)
+    if (!user || typeof userId !== 'string') {
+      return res.status(403).json({ message: 'Không có id.' })
+    }
+    const chapterId = req.params._id
+    let { mangaName, number, viporfree, images, price } = req.body
+    const imageArray = images.split('\n')
+    number = number.toString()
+    const chapter = await Chapter.findById(chapterId)
+
+    if (!chapter) {
+      return res.status(404).json({ message: 'Không tìm thấy chương' })
+    }
+    const manga = await Manga.findOne({ chapters: chapterId })
+    if (manga) {
+      manga.chapters = manga.chapters.filter(id => id.toString() !== chapterId)
+      manga.chapters.push(chapterId)
+      await manga.save()
+    }
+    if (viporfree === 'vip') {
+      price = 2
+    } else {
+      price = 0
+    }
+    if (user.role === 'nhomdich') {
+      chapter.pendingChanges = {
+        mangaName,
+        number,
+        viporfree,
+        price,
+        images: imageArray,
+        isChap: true
+      }
+      chapter.isApproved = false
+      const notification = new Notification({
+        adminId: '653a20c611295a22062661f9',
+        title: 'Duyệt sửa chap',
+        content: `Chap ${number} - Truyện ${mangaName} cần được duyệt để sửa .`,
+        userId: userId,
+        mangaId: chapterId,
+        isRead: false
+      })
+      await Promise.all([chapter.save(), notification.save()])
+      res.json({
+        message: 'Chap của bạn vừa được sửa và đang đợi duyệt'
+      })
+    } else {
+      chapter.pendingChanges = undefined
+      chapter.isApproved = true
+      ;(chapter.mangaName = mangaName),
+        (chapter.number = number),
+        (chapter.viporfree = viporfree),
+        (chapter.price = price),
+        (chapter.images = imageArray),
+        (chapter.isChap = true)
+      await chapter.save()
+      res.json({ message: 'Chap sửa thành công' })
     }
   } catch (error) {
     console.error('Lỗi khi cập nhật chương:', error)

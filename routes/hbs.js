@@ -155,6 +155,46 @@ router.get('/renderbaiviet', async (req, res) => {
   }
 })
 
+router.get('/renderbaivietnew/:userid', async (req, res) => {
+  try {
+    const userId = req.params.userid
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
+
+    const user = await User.findById(userId)
+    if (!user) {
+      return res.status(403).json({ message: 'Không tìm thấy user' })
+    }
+
+    let query = user.role === 'nhomdich' ? { userId } : {}
+
+    const total = await Baiviet.countDocuments(query)
+    const baiviet = await Baiviet.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ date: -1 })
+
+    const formattedBaiviet = baiviet.map(item => ({
+      _id: item._id,
+      content: item.content,
+      like: item.like,
+      comment: item.comment.length,
+      date: moment(item.date).format('DD/MM/YYYY HH:mm:ss')
+    }))
+
+    res.json({
+      baiviet: formattedBaiviet,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalItems: total
+    })
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách bài viết:', error)
+    res.status(500).json({ error: 'Đã xảy ra lỗi khi lấy danh sách bài viết' })
+  }
+})
+
 router.get('/categoryscreen', async (req, res) => {
   try {
     const userId = req.session.userId
@@ -209,6 +249,32 @@ router.get('/mangass', async (req, res) => {
       const manga = await Manga.find({ isRead: true })
       res.render('home', { manga })
     }
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách truyện:', error)
+    res.status(500).json({ error: 'Đã xảy ra lỗi khi lấy danh sách truyện' })
+  }
+})
+
+router.get('/mangasnew', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+
+    const query = { isRead: true }
+
+    const totalmanga = await Manga.countDocuments(query)
+
+    const manga = await Manga.find(query)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ _id: -1 })
+
+    res.json({
+      manga,
+      currentPage: page,
+      totalPages: Math.ceil(totalmanga / limit),
+      totalmanga
+    })
   } catch (error) {
     console.error('Lỗi khi lấy danh sách truyện:', error)
     res.status(500).json({ error: 'Đã xảy ra lỗi khi lấy danh sách truyện' })
