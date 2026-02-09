@@ -749,41 +749,41 @@
             </div>
         </div>
         <script>
-        function setupChapterPage() {
-            const chapterDetailButtons = document.querySelectorAll('.detail-button');
+       function setupChapterPage() {
+			const chapterDetailButtons=document.querySelectorAll('.detail-button');
 
-            chapterDetailButtons.forEach(button => {
-                button.addEventListener('click', function (event) {
-                    const chapterId = this.getAttribute('data-chapter-id');
-                    fetch(`/chapterchitiet/${chapterId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.length > 0) {
-                                const modalBody = document.querySelector('#image-modal .modal-body');
-                                { { !-- const imagesHtml = data.map(image => `<img src="${image}" style="width: 100px; height: 100px;" loading="lazy">`).join(''); --} }
-                                modalBody.innerHTML = '';
-                                data.forEach(image => {
-                                    const imgElement = document.createElement('img');
-                                    imgElement.src = image;
-                                    imgElement.style.width = '100px';
-                                    imgElement.style.height = '100px';
-                                    imgElement.style.margin = '5px';
-                                    imgElement.style.objectFit = 'cover';
-                                    modalBody.appendChild(imgElement);
-                                });
-                                
-                                $('#image-modal').modal('show');
-                            } else {
-                                alert('Chưa có ảnh cho chương này.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Lỗi khi lấy dữ liệu ảnh:', error);
-                            alert('Đã xảy ra lỗi khi lấy dữ liệu ảnh.');
-                        });
-                });
-            });
-        }
+			chapterDetailButtons.forEach(button => {
+				button.addEventListener('click',function() {
+					const chapterId=this.getAttribute('data-chapter-id');
+
+					fetch(`/chapterchitiet/${chapterId}`)
+						.then(response => response.json())
+						.then(data => {
+							const modalBody=document.querySelector('#image-modal .modal-body');
+							modalBody.innerHTML='';
+
+							if(data) {
+								// Tiêu đề (nếu có)
+								
+
+								// Nội dung chương
+								const content=document.createElement('p');
+								content.textContent=data;
+								content.style.whiteSpace='pre-line'; // giữ xuống dòng
+								modalBody.appendChild(content);
+
+								$('#image-modal').modal('show');
+							} else {
+								alert('Chưa có nội dung cho chương này.');
+							}
+						})
+						.catch(error => {
+							console.error('Lỗi khi lấy nội dung chương:',error);
+							alert('Đã xảy ra lỗi khi lấy nội dung chương.');
+						});
+				});
+			});
+		}
         document.addEventListener('DOMContentLoaded', function () {
             setupChapterPage();
             $('.detail-button').on('click', function () {

@@ -80,7 +80,7 @@ router.get('/getchapnew/:userid', async (req, res) => {
     const [totalCount, chapters] = await Promise.all([
       Chapter.countDocuments(query),
       Chapter.find(query)
-        .select('mangaName number viporfree price isChap images')
+        .select('mangaName number viporfree price isChap content')
         .sort({ mangaName: 1 })
         .skip(skip)
         .limit(limit)
@@ -141,7 +141,7 @@ router.get('/searchchap/:userid', async (req, res) => {
     const [totalCount, chapters] = await Promise.all([
       Chapter.countDocuments(query),
       Chapter.find(query)
-        .select('mangaName number viporfree price isChap images')
+        .select('mangaName number viporfree price isChap content')
         .sort({ mangaName: 1 })
         .skip(skip)
         .limit(limit)
@@ -239,7 +239,7 @@ router.post('/purchaseChapter/:userId/:chapterId', async (req, res) => {
 router.post('/chapters', async (req, res) => {
   try {
     const userId = req.session.userId
-    const { mangaName, number, viporfree, images } = req.body
+    const { mangaName, number, viporfree, content } = req.body
     const user = await User.findById(userId)
     if (!userId || typeof userId !== 'string') {
       console.log('Session:', req.session)
@@ -249,8 +249,6 @@ router.post('/chapters', async (req, res) => {
       console.log('Session:', req.session)
       return res.status(403).json({ message: 'Không tìm thấy user.' })
     }
-
-    const imageArray = images.split('\n')
 
     const manga = await Manga.findOne({ manganame: mangaName })
     if (!manga) {
@@ -263,7 +261,7 @@ router.post('/chapters', async (req, res) => {
       mangaName,
       number,
       viporfree,
-      images: imageArray
+      content
     })
     if (user.role === 'nhomdich') {
       const notification = new Notification({
@@ -307,7 +305,7 @@ router.post('/chapters', async (req, res) => {
 router.post('/chaptersnew/:userId', async (req, res) => {
   try {
     const userId = req.params.userId
-    const { mangaName, number, viporfree, images } = req.body
+    const { mangaName, number, viporfree, content } = req.body
     const user = await User.findById(userId)
     if (!userId || typeof userId !== 'string') {
       return res.status(403).json({ message: 'Không có id.' })
@@ -316,7 +314,7 @@ router.post('/chaptersnew/:userId', async (req, res) => {
       return res.status(403).json({ message: 'Không tìm thấy user.' })
     }
 
-    const imageArray = images.split('\n')
+    // const imageArray = images.split('\n')
 
     const manga = await Manga.findOne({ manganame: mangaName })
     if (!manga) {
@@ -329,7 +327,7 @@ router.post('/chaptersnew/:userId', async (req, res) => {
       mangaName,
       number,
       viporfree,
-      images: imageArray
+      content
     })
     if (user.role === 'nhomdich') {
       const notification = new Notification({
@@ -379,8 +377,9 @@ router.post('/chapterput/:_id', async (req, res) => {
       return res.status(403).json({ message: 'Không có id.' })
     }
     const chapterId = req.params._id
-    let { mangaName, number, viporfree, images, price } = req.body
-    const imageArray = images.split('\n')
+    let { mangaName, number, viporfree, content, price } = req.body
+    // const imageArray = images.split('\n')
+
     number = number.toString()
     const chapter = await Chapter.findById(chapterId)
 
@@ -404,7 +403,7 @@ router.post('/chapterput/:_id', async (req, res) => {
         number,
         viporfree,
         price,
-        images: imageArray,
+        content,
         isChap: true
       }
       chapter.isApproved = false
@@ -446,8 +445,7 @@ router.post('/chapterputnew/:_id/:userid', async (req, res) => {
       return res.status(403).json({ message: 'Không có id.' })
     }
     const chapterId = req.params._id
-    let { mangaName, number, viporfree, images, price } = req.body
-    const imageArray = images.split('\n')
+    let { mangaName, number, viporfree, content, price } = req.body
     number = number.toString()
     const chapter = await Chapter.findById(chapterId)
 
@@ -471,7 +469,7 @@ router.post('/chapterputnew/:_id/:userid', async (req, res) => {
         number,
         viporfree,
         price,
-        images: imageArray,
+        content,
         isChap: true
       }
       chapter.isApproved = false
@@ -494,7 +492,7 @@ router.post('/chapterputnew/:_id/:userid', async (req, res) => {
         (chapter.number = number),
         (chapter.viporfree = viporfree),
         (chapter.price = price),
-        (chapter.images = imageArray),
+        (chapter.content = content),
         (chapter.isChap = true)
       await chapter.save()
       res.json({ message: 'Chap sửa thành công' })
@@ -546,27 +544,27 @@ router.get('/chapterchitiet/:_id', async (req, res) => {
     if (!chapter) {
       return res.status(404).json({ message: 'Không tìm thấy chap.' })
     }
-    const htmlToParse = '<html><head>...</head>' + chapter.images + '</html>'
+    // const htmlToParse = '<html><head>...</head>' + chapter.images + '</html>'
 
-    // Kiểm tra dữ liệu trước khi sử dụng cheerio
-    console.log('Raw HTML data:', chapter.images)
+    // // Kiểm tra dữ liệu trước khi sử dụng cheerio
+    // console.log('Raw HTML data:', chapter.images)
 
-    const imageLinks = []
-    const $ = cheerio.load(htmlToParse, {
-      normalizeWhitespace: true,
-      xmlMode: true
-    })
+    // const imageLinks = []
+    // const $ = cheerio.load(htmlToParse, {
+    //   normalizeWhitespace: true,
+    //   xmlMode: true
+    // })
 
-    $('img').each((index, element) => {
-      const src = $(element).attr('src')
-      if (src) {
-        imageLinks.push(src)
-      } else {
-        console.error('Không tìm thấy thuộc tính src trong thẻ img')
-      }
-    })
+    // $('img').each((index, element) => {
+    //   const src = $(element).attr('src')
+    //   if (src) {
+    //     imageLinks.push(src)
+    //   } else {
+    //     console.error('Không tìm thấy thuộc tính src trong thẻ img')
+    //   }
+    // })
 
-    res.json(imageLinks)
+    res.json(chapter.content)
   } catch (error) {
     console.error('Lỗi khi lấy danh sách ảnh chap:', error)
     res.status(500).json({ error: 'Đã xảy ra lỗi khi lấy danh sách ảnh chap.' })
@@ -589,32 +587,32 @@ router.get('/chapternotify/:chapterId', async (req, res) => {
     if (!chapterDetail) {
       return res.status(404).json({ error: 'Không tìm thấy chi tiết chap.' })
     }
-    const htmlToParse =
-      '<html><head>...</head>' + chapterDetail.images + '</html>'
+    // const htmlToParse =
+    //   '<html><head>...</head>' + chapterDetail.images + '</html>'
 
-    // Kiểm tra dữ liệu trước khi sử dụng cheerio
-    console.log('Raw HTML data:', chapterDetail.images)
+    // // Kiểm tra dữ liệu trước khi sử dụng cheerio
+    // console.log('Raw HTML data:', chapterDetail.images)
 
-    const imageLinks = []
-    const $ = cheerio.load(htmlToParse, {
-      normalizeWhitespace: true,
-      xmlMode: true
-    })
+    // const imageLinks = []
+    // const $ = cheerio.load(htmlToParse, {
+    //   normalizeWhitespace: true,
+    //   xmlMode: true
+    // })
 
-    $('img').each((index, element) => {
-      const src = $(element).attr('src')
-      if (src) {
-        imageLinks.push(src)
-      } else {
-        console.error('Không tìm thấy thuộc tính src trong thẻ img')
-      }
-    })
+    // $('img').each((index, element) => {
+    //   const src = $(element).attr('src')
+    //   if (src) {
+    //     imageLinks.push(src)
+    //   } else {
+    //     console.error('Không tìm thấy thuộc tính src trong thẻ img')
+    //   }
+    // })
     res.json({
       mangaName: chapterDetail.mangaName,
       number: chapterDetail.number,
       viporfree: chapterDetail.viporfree,
       price: chapterDetail.price,
-      images: imageLinks
+      content: chapterDetail.content
     })
   } catch (error) {
     console.error('Lỗi khi lấy chi tiết chap:', error)
@@ -638,32 +636,13 @@ router.get('/chapternotifysua/:chapterId', async (req, res) => {
     if (!chapterDetail) {
       return res.status(404).json({ error: 'Không tìm thấy chap chi tiết.' })
     }
-    const htmlToParse =
-      '<html><head>...</head>' + chapterDetail.pendingChanges.images + '</html>'
 
-    // Kiểm tra dữ liệu trước khi sử dụng cheerio
-    console.log('Raw HTML data:', chapterDetail.pendingChanges.images)
-
-    const imageLinks = []
-    const $ = cheerio.load(htmlToParse, {
-      normalizeWhitespace: true,
-      xmlMode: true
-    })
-
-    $('img').each((index, element) => {
-      const src = $(element).attr('src')
-      if (src) {
-        imageLinks.push(src)
-      } else {
-        console.error('Không tìm thấy thuộc tính src trong thẻ img')
-      }
-    })
     res.json({
       mangaName: chapterDetail.pendingChanges.mangaName,
       number: chapterDetail.pendingChanges.number,
       viporfree: chapterDetail.pendingChanges.viporfree,
       price: chapterDetail.pendingChanges.price,
-      images: imageLinks
+      content: chapterDetail.pendingChanges.content
     })
   } catch (error) {
     console.error('Lỗi khi lấy chi tiết truyện:', error)
@@ -776,7 +755,7 @@ router.post('/approvesuachap/:chapId/:id', async (req, res) => {
       chapter.number = chapter.pendingChanges.number
       chapter.viporfree = chapter.pendingChanges.viporfree
       chapter.price = chapter.pendingChanges.price
-      chapter.images = chapter.pendingChanges.images
+      chapter.content = chapter.pendingChanges.content
       chapter.isChap = chapter.pendingChanges.isChap
     }
 
@@ -836,7 +815,7 @@ router.get('/chapter/:_id/:userid/images', async (req, res) => {
       nextChapter = {
         _id: chapters[currentChapterIndex + 1]._id,
         chapname: chapters[currentChapterIndex + 1].number.toString(),
-        images: chapters[currentChapterIndex + 1].images,
+        content: chapters[currentChapterIndex + 1].content,
         viporfree: chapters[currentChapterIndex + 1].viporfree,
         price: chapters[currentChapterIndex + 1].price
       }
@@ -856,7 +835,7 @@ router.get('/chapter/:_id/:userid/images', async (req, res) => {
       prevChapter = {
         _id: chapters[currentChapterIndex - 1]._id,
         chapname: chapters[currentChapterIndex - 1].number.toString(),
-        images: chapters[currentChapterIndex - 1].images,
+        content: chapters[currentChapterIndex - 1].content,
         viporfree: chapters[currentChapterIndex - 1].viporfree,
         price: chapters[currentChapterIndex - 1].price
       }
@@ -880,7 +859,7 @@ router.get('/chapter/:_id/:userid/images', async (req, res) => {
 
     const responseData = {
       _id: chapterid,
-      images: chapter.images,
+      content: chapter.content,
       chapname: chapter.number,
       viporfree: chapter.viporfree,
       price: chapter.price,

@@ -795,12 +795,12 @@
 	</section>
 	<!-- CONTENT -->
 	<script>
-		const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
+		const allSideMenu=document.querySelectorAll('#sidebar .side-menu.top li a');
 
 		allSideMenu.forEach(item => {
-			const li = item.parentElement;
+			const li=item.parentElement;
 
-			item.addEventListener('click', function () {
+			item.addEventListener('click',function() {
 				allSideMenu.forEach(i => {
 					i.parentElement.classList.remove('active');
 				})
@@ -808,48 +808,48 @@
 			})
 		});
 
-		const menuBar = document.querySelector('#content nav .bx.bx-menu');
-		const sidebar = document.getElementById('sidebar');
+		const menuBar=document.querySelector('#content nav .bx.bx-menu');
+		const sidebar=document.getElementById('sidebar');
 
-		menuBar.addEventListener('click', function () {
+		menuBar.addEventListener('click',function() {
 			sidebar.classList.toggle('hide');
 		})
 
-		const searchButton = document.querySelector('#content nav form .form-input button');
-		const searchButtonIcon = document.querySelector('#content nav form .form-input button .bx');
-		const searchForm = document.querySelector('#content nav form');
+		const searchButton=document.querySelector('#content nav form .form-input button');
+		const searchButtonIcon=document.querySelector('#content nav form .form-input button .bx');
+		const searchForm=document.querySelector('#content nav form');
 
-		searchButton.addEventListener('click', function (e) {
-			if (window.innerWidth < 576) {
+		searchButton.addEventListener('click',function(e) {
+			if(window.innerWidth<576) {
 				e.preventDefault();
 				searchForm.classList.toggle('show');
-				if (searchForm.classList.contains('show')) {
-					searchButtonIcon.classList.replace('bx-search', 'bx-x');
+				if(searchForm.classList.contains('show')) {
+					searchButtonIcon.classList.replace('bx-search','bx-x');
 				} else {
-					searchButtonIcon.classList.replace('bx-x', 'bx-search');
+					searchButtonIcon.classList.replace('bx-x','bx-search');
 				}
 			}
 		})
 
-		if (window.innerWidth < 768) {
+		if(window.innerWidth<768) {
 			sidebar.classList.add('hide');
-		} else if (window.innerWidth > 576) {
-			searchButtonIcon.classList.replace('bx-x', 'bx-search');
+		} else if(window.innerWidth>576) {
+			searchButtonIcon.classList.replace('bx-x','bx-search');
 			searchForm.classList.remove('show');
 		}
 
 
-		window.addEventListener('resize', function () {
-			if (this.innerWidth > 576) {
-				searchButtonIcon.classList.replace('bx-x', 'bx-search');
+		window.addEventListener('resize',function() {
+			if(this.innerWidth>576) {
+				searchButtonIcon.classList.replace('bx-x','bx-search');
 				searchForm.classList.remove('show');
 			}
 		})
 
-		const switchMode = document.getElementById('switch-mode');
+		const switchMode=document.getElementById('switch-mode');
 
-		switchMode.addEventListener('change', function () {
-			if (this.checked) {
+		switchMode.addEventListener('change',function() {
+			if(this.checked) {
 				document.body.classList.add('dark');
 			} else {
 				document.body.classList.remove('dark');
@@ -859,14 +859,14 @@
 		fetch('/top5manga')
 			.then(response => response.json())
 			.then(data => {
-				const tbody = document.getElementById('manga-list');
+				const tbody=document.getElementById('manga-list');
 
 				// Xóa dữ liệu cũ trong tbody
-				tbody.innerHTML = '';
+				tbody.innerHTML='';
 
 				// Thêm dữ liệu mới từ API vào tbody
 				data.forEach(manga => {
-					const row = `<tr>
+					const row=`<tr>
                                 <td>
                                 <img src="${manga.image}" alt="Manga Image">
                                 </td>
@@ -874,102 +874,104 @@
                                 <td>${manga.author}</td>
                                 <td>${manga.view}</td>
                             </tr>`;
-					tbody.innerHTML += row;
+					tbody.innerHTML+=row;
 				});
 			})
-			.catch(error => console.error('Đã xảy ra lỗi:', error));
+			.catch(error => console.error('Đã xảy ra lỗi:',error));
 
-		const mangaManagerLink = document.getElementById('mangaManagerLink');
+		const mangaManagerLink=document.getElementById('mangaManagerLink');
 
-		mangaManagerLink.addEventListener("click", function (event) {
+		mangaManagerLink.addEventListener("click",function(event) {
 			fetch('/mangass')
 				.then(response => response.text())
 				.then(data => {
-					const mainContent = document.querySelector("#content main");
-					mainContent.innerHTML = data;
-					window.location.href = '#mangaManagerLink';
+					const mainContent=document.querySelector("#content main");
+					mainContent.innerHTML=data;
+					window.location.href='#mangaManagerLink';
 				})
-				.catch(error => console.error('Đã xảy ra lỗi:', error));
+				.catch(error => console.error('Đã xảy ra lỗi:',error));
 		});
 
-		const chapterManagerLink = document.getElementById('chapterManagerLink');
+		const chapterManagerLink=document.getElementById('chapterManagerLink');
 
-		chapterManagerLink.addEventListener("click", function (event) {
+		chapterManagerLink.addEventListener("click",function(event) {
 			fetch('/getchap')
 				.then(response => response.text())
 				.then(data => {
-					const mainContent = document.querySelector("#content main");
-					mainContent.innerHTML = data;
+					const mainContent=document.querySelector("#content main");
+					mainContent.innerHTML=data;
 					setupChapterPage();
 				})
-				.catch(error => console.error('Đã xảy ra lỗi:', error));
+				.catch(error => console.error('Đã xảy ra lỗi:',error));
 		});
 
 		function setupChapterPage() {
-			const chapterDetailButtons = document.querySelectorAll('.detail-button');
+			const chapterDetailButtons=document.querySelectorAll('.detail-button');
 
 			chapterDetailButtons.forEach(button => {
-				button.addEventListener('click', function (event) {
-					const chapterId = this.getAttribute('data-chapter-id');
+				button.addEventListener('click',function() {
+					const chapterId=this.getAttribute('data-chapter-id');
+
 					fetch(`/chapterchitiet/${chapterId}`)
 						.then(response => response.json())
 						.then(data => {
-							if (data.length > 0) {
-								const modalBody = document.querySelector('#image-modal .modal-body');
-								modalBody.innerHTML = '';
-								data.forEach(image => {
-									const imgElement = document.createElement('img');
-									imgElement.src = image;
-									imgElement.style.width = '100px';
-									imgElement.style.height = '100px';
-									imgElement.style.margin = '5px';
-									imgElement.style.objectFit = 'cover';
-									modalBody.appendChild(imgElement);
-								});
+							const modalBody=document.querySelector('#image-modal .modal-body');
+							modalBody.innerHTML='';
+
+							if(data) {
+								// Tiêu đề (nếu có)
+								
+
+								// Nội dung chương
+								const content=document.createElement('p');
+								content.textContent=data;
+								content.style.whiteSpace='pre-line'; // giữ xuống dòng
+								modalBody.appendChild(content);
+
 								$('#image-modal').modal('show');
 							} else {
-								alert('Chưa có ảnh cho chương này.');
+								alert('Chưa có nội dung cho chương này.');
 							}
 						})
 						.catch(error => {
-							console.error('Lỗi khi lấy dữ liệu ảnh:', error);
-							alert('Đã xảy ra lỗi khi lấy dữ liệu ảnh.');
+							console.error('Lỗi khi lấy nội dung chương:',error);
+							alert('Đã xảy ra lỗi khi lấy nội dung chương.');
 						});
 				});
 			});
 		}
-		const categoryManagerLink = document.getElementById('categoryManagerLink');
+		const categoryManagerLink=document.getElementById('categoryManagerLink');
 
-		categoryManagerLink.addEventListener("click", function (event) {
+		categoryManagerLink.addEventListener("click",function(event) {
 			event.preventDefault();
 			fetch('/categoryscreen')
 				.then(response => response.text())
 				.then(data => {
-					const mainContent = document.querySelector("#content main");
-					mainContent.innerHTML = data;
+					const mainContent=document.querySelector("#content main");
+					mainContent.innerHTML=data;
 					setcategory();
 				})
-				.catch(error => console.error('Đã xảy ra lỗi:', error));
+				.catch(error => console.error('Đã xảy ra lỗi:',error));
 		});
 
 		function setcategory() {
-			$(document).ready(function () {
+			$(document).ready(function() {
 				// Hiện dialog thêm thể loại khi bấm nút "Thêm thể loại"
-				$("#addCategoryButton").click(function () {
+				$("#addCategoryButton").click(function() {
 					$("#addCategoryModal").modal("show");
 				});
 
 				// Hiện dialog sửa thể loại khi bấm nút "Edit" trong bảng danh sách thể loại
-				$(".editCategoryButton").click(function () {
+				$(".editCategoryButton").click(function() {
 					// Lấy thông tin thể loại từ hàng bảng
-					var categoryId = $(this).data("id");
-					var categoryname = $(this).closest("tr").find("td:first").text();
+					var categoryId=$(this).data("id");
+					var categoryname=$(this).closest("tr").find("td:first").text();
 
 					// Hiển thị thông tin thể loại trong modal sửa thể loại
 					$("#editCategoryname").val(categoryname);
 
 					// Đặt action của form sửa thể loại để gửi cập nhật đúng thể loại
-					$("#editCategoryForm").attr("action", "/categoryput/" + categoryId);
+					$("#editCategoryForm").attr("action","/categoryput/"+categoryId);
 
 					$("#editCategoryModal").modal("show");
 				});
@@ -977,10 +979,10 @@
 			});
 		}
 
-		document.addEventListener('DOMContentLoaded', function () {
-			const modalBody = document.getElementById('notificationBody');
-			const deleteSelectedButton = document.getElementById('deleteSelectedButton');
-			const selectAllButton = document.getElementById('selectAllButton');
+		document.addEventListener('DOMContentLoaded',function() {
+			const modalBody=document.getElementById('notificationBody');
+			const deleteSelectedButton=document.getElementById('deleteSelectedButton');
+			const selectAllButton=document.getElementById('selectAllButton');
 
 			// Lấy thông báo từ API
 			fetch('/rendernotifinhomdich')
@@ -988,42 +990,42 @@
 				.then(notifications => {
 					// Hiển thị thông báo trong modal body
 					notifications.forEach(notification => {
-						const notificationDiv = document.createElement('div');
-						const checkbox = document.createElement('input');
-						checkbox.type = 'checkbox';
-						checkbox.value = notification._id; // Đặt giá trị của checkbox là ID của thông báo
+						const notificationDiv=document.createElement('div');
+						const checkbox=document.createElement('input');
+						checkbox.type='checkbox';
+						checkbox.value=notification._id; // Đặt giá trị của checkbox là ID của thông báo
 						checkbox.classList.add('notification-checkbox');
 
-						notificationDiv.innerHTML = `<h5>${notification.title}</h5><p>${notification.content}</p>`;
+						notificationDiv.innerHTML=`<h5>${notification.title}</h5><p>${notification.content}</p>`;
 						notificationDiv.prepend(checkbox); // Thêm checkbox vào đầu div thông báo
 						modalBody.appendChild(notificationDiv);
 					});
 
 					// Sự kiện khi checkbox được chọn
-					modalBody.addEventListener('change', function (event) {
-						const checkboxes = document.querySelectorAll('.notification-checkbox');
-						const selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+					modalBody.addEventListener('change',function(event) {
+						const checkboxes=document.querySelectorAll('.notification-checkbox');
+						const selectedCheckboxes=Array.from(checkboxes).filter(checkbox => checkbox.checked);
 
 						// Hiển thị/nút xóa nếu có ít nhất một checkbox được chọn
-						if (selectedCheckboxes.length > 0) {
-							deleteSelectedButton.style.display = 'block';
+						if(selectedCheckboxes.length>0) {
+							deleteSelectedButton.style.display='block';
 						} else {
-							deleteSelectedButton.style.display = 'none';
+							deleteSelectedButton.style.display='none';
 						}
 					});
 
 					// Sự kiện khi nút xóa được nhấn
-					deleteSelectedButton.addEventListener('click', function () {
-						const checkboxes = document.querySelectorAll('.notification-checkbox:checked');
-						const selectedIds = Array.from(checkboxes).map(checkbox => checkbox.value);
+					deleteSelectedButton.addEventListener('click',function() {
+						const checkboxes=document.querySelectorAll('.notification-checkbox:checked');
+						const selectedIds=Array.from(checkboxes).map(checkbox => checkbox.value);
 
 						// Gọi API xóa thông báo đã chọn
-						fetch('/delete-selected-notifications', {
+						fetch('/delete-selected-notifications',{
 							method: 'POST',
 							headers: {
 								'Content-Type': 'application/json'
 							},
-							body: JSON.stringify({ ids: selectedIds })
+							body: JSON.stringify({ids: selectedIds})
 						})
 							.then(response => response.json())
 							.then(data => {
@@ -1031,7 +1033,7 @@
 								console.log(data);
 							})
 							.catch(error => {
-								console.error('Lỗi khi xóa thông báo:', error);
+								console.error('Lỗi khi xóa thông báo:',error);
 							});
 
 						// Đóng modal sau khi xóa
@@ -1039,65 +1041,65 @@
 					});
 
 					// Sự kiện khi nút Chọn tất cả được nhấn
-					selectAllButton.addEventListener('click', function () {
-						const checkboxes = document.querySelectorAll('.notification-checkbox');
-						checkboxes.forEach(checkbox => checkbox.checked = true);
+					selectAllButton.addEventListener('click',function() {
+						const checkboxes=document.querySelectorAll('.notification-checkbox');
+						checkboxes.forEach(checkbox => checkbox.checked=true);
 
 						// Hiển thị/nút xóa vì tất cả checkbox đều được chọn
-						deleteSelectedButton.style.display = 'block';
+						deleteSelectedButton.style.display='block';
 					});
 				})
 				.catch(error => {
-					console.error('Lỗi khi lấy thông báo:', error);
+					console.error('Lỗi khi lấy thông báo:',error);
 					// Xử lý lỗi nếu cần thiết
 				});
 		});
 
 		fetch('/unread-count-nhomdich')
 			.then(response => {
-				if (!response.ok) {
+				if(!response.ok) {
 					throw new Error(`HTTP error! Status: ${response.status}`);
 				}
 				return response.json();
 			})
 			.then(data => {
 				// Cập nhật số lượng thông báo chưa đọc trong thẻ span
-				const notificationSpan = document.querySelector('.num');
-				notificationSpan.innerText = data.unreadCount.toString();
+				const notificationSpan=document.querySelector('.num');
+				notificationSpan.innerText=data.unreadCount.toString();
 			})
 			.catch(error => console.error(error));
 
 		function baivietmodal() {
-			const reportdetailbutton = document.querySelectorAll('.report-detail-button');
+			const reportdetailbutton=document.querySelectorAll('.report-detail-button');
 
 			reportdetailbutton.forEach(button => {
-				button.addEventListener('click', function (event) {
-					const mangaId = this.getAttribute('data-manga-id');
+				button.addEventListener('click',function(event) {
+					const mangaId=this.getAttribute('data-manga-id');
 					fetch(`/baivietreport/${mangaId}`)
 						.then(response => response.json())
 						.then(data => {
-							if (data) {
-								const iconSpan = document.createElement('span');
-								iconSpan.innerHTML = data.content;
-								const finalContent = iconSpan.innerHTML;
-								document.getElementById(`contents_${mangaId}`).textContent = finalContent;
-								const avatarImg = document.getElementById(`avatar_${mangaId}`);
-								avatarImg.src = `data:image/jpeg;base64,${data.avatar}`; // Hiển thị avatar từ base64
-								document.getElementById(`username_${mangaId}`).textContent = data.username;
-								document.getElementById(`date_${mangaId}`).textContent = data.date;
-								const imagesDiv = document.getElementById(`images_${mangaId}`);
+							if(data) {
+								const iconSpan=document.createElement('span');
+								iconSpan.innerHTML=data.content;
+								const finalContent=iconSpan.innerHTML;
+								document.getElementById(`contents_${mangaId}`).textContent=finalContent;
+								const avatarImg=document.getElementById(`avatar_${mangaId}`);
+								avatarImg.src=`data:image/jpeg;base64,${data.avatar}`; // Hiển thị avatar từ base64
+								document.getElementById(`username_${mangaId}`).textContent=data.username;
+								document.getElementById(`date_${mangaId}`).textContent=data.date;
+								const imagesDiv=document.getElementById(`images_${mangaId}`);
 
 
 								// Kiểm tra nếu có hình ảnh
-								if (data.images && data.images.length > 0) {
-									imagesDiv.style.display = 'block'; // Hiển thị thẻ images
+								if(data.images&&data.images.length>0) {
+									imagesDiv.style.display='block'; // Hiển thị thẻ images
 
 									// Tạo các thẻ img để hiển thị từng ảnh trong mảng
-									const imagesHtml = data.images.map(img => `<img style="width: 80%;height: auto;border-radius: 0;" id="image" src="data:image/jpeg;base64,${img}" alt="Images">`).join('');
+									const imagesHtml=data.images.map(img => `<img style="width: 80%;height: auto;border-radius: 0;" id="image" src="data:image/jpeg;base64,${img}" alt="Images">`).join('');
 
-									imagesDiv.innerHTML = imagesHtml; // Thêm hình ảnh vào thẻ
+									imagesDiv.innerHTML=imagesHtml; // Thêm hình ảnh vào thẻ
 								} else {
-									imagesDiv.style.display = 'none'; // Ẩn thẻ images
+									imagesDiv.style.display='none'; // Ẩn thẻ images
 								}
 								$(`#reportmodal_${mangaId}`).modal('show');
 								getAndDisplayComments(mangaId)
@@ -1106,7 +1108,7 @@
 							}
 						})
 						.catch(error => {
-							console.error('Lỗi khi lấy thông tin bài viết:', error);
+							console.error('Lỗi khi lấy thông tin bài viết:',error);
 							alert('Đã xảy ra lỗi khi khi lấy thông tin bài viết.');
 						});
 				});
@@ -1114,71 +1116,71 @@
 		}
 
 
-		const baivietManagerLink = document.getElementById('baivietManagerLink');
+		const baivietManagerLink=document.getElementById('baivietManagerLink');
 
-		baivietManagerLink.addEventListener("click", function (event) {
+		baivietManagerLink.addEventListener("click",function(event) {
 			event.preventDefault();
 			fetch('/renderbaiviet')
 				.then(response => response.text())
 				.then(data => {
-					const mainContent = document.querySelector("#content main");
-					mainContent.innerHTML = data;
+					const mainContent=document.querySelector("#content main");
+					mainContent.innerHTML=data;
 					setbaiviet()
 					baivietmodal()
 					postcmt()
 				})
-				.catch(error => console.error('Đã xảy ra lỗi:', error));
+				.catch(error => console.error('Đã xảy ra lỗi:',error));
 		});
 		function setbaiviet() {
-			$(document).ready(function () {
-				$("#postContent").click(function () {
+			$(document).ready(function() {
+				$("#postContent").click(function() {
 					$("#myModal").modal("show");
 				});
 
 			});
 		}
 		function postcmt() {
-			const postCommentBtns = document.querySelectorAll('.postCommentBtn');
+			const postCommentBtns=document.querySelectorAll('.postCommentBtn');
 
 			postCommentBtns.forEach(button => {
-				button.addEventListener('click', function () {
-					const mangaId = this.getAttribute('data-manga-id');
-					const modalId = `#reportmodal_${mangaId}`;
-					const commentInput = document.querySelector(`${modalId} .commentInput`);
-					const comment = commentInput.value;
+				button.addEventListener('click',function() {
+					const mangaId=this.getAttribute('data-manga-id');
+					const modalId=`#reportmodal_${mangaId}`;
+					const commentInput=document.querySelector(`${modalId} .commentInput`);
+					const comment=commentInput.value;
 
-					fetch(`/postcmtbaiviet/${mangaId}`, {
+					fetch(`/postcmtbaiviet/${mangaId}`,{
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
 						},
-						body: JSON.stringify({ comment }),
+						body: JSON.stringify({comment}),
 					})
 						.then(response => response.json())
 						.then(data => {
 							getAndDisplayComments(mangaId);
-							commentInput.value = '';
+							commentInput.value='';
 						})
 						.catch(error => {
-							console.error('Lỗi khi gửi bình luận:', error);
+							console.error('Lỗi khi gửi bình luận:',error);
 							alert('Đã xảy ra lỗi khi gửi bình luận.');
 						});
 				});
 			});
 		}
 		function getAndDisplayComments(mangaId) {
-			const commentsSection = document.querySelectorAll('.commentsSection');
+			const commentsSection=document.querySelectorAll('.commentsSection');
 
 			fetch(`/getcmtbaiviet/${mangaId}`)
 				.then(response => response.json())
 				.then(data => {
 
 					commentsSection.forEach(commentsSection => {
-						commentsSection.innerHTML = '';
+						commentsSection.innerHTML='';
 
 						data.forEach(comment => {
-							const newCommentDiv = document.createElement('div');
-							newCommentDiv.innerHTML = `<div style="margin-top: 20px; display: flex;">
+							const newCommentDiv=document.createElement('div');
+							newCommentDiv.innerHTML=`<div style="margin-top: 20px; display: flex;">
     <img style="width: 50px; height: 50px; border-radius: 50%; overflow: hidden; display: inline-block;" src="data:image/jpeg;base64,${comment.avatar}" alt="Images">
     <div style="padding: 10px; background: #ccc; width: 80%; height: auto; border-radius: 10px; margin-left: 10px; display: flex; flex-direction: column;">
         <h6 style="margin-left: 5px; margin-bottom: 0; display: block; vertical-align: top;">${comment.username}</h6>
@@ -1190,49 +1192,49 @@
 					})
 				})
 				.catch(error => {
-					console.error('Lỗi khi lấy danh sách bình luận:', error);
+					console.error('Lỗi khi lấy danh sách bình luận:',error);
 					alert('Đã xảy ra lỗi khi lấy danh sách bình luận.');
 				});
 
 		}
 
-		const settingmanage = document.getElementById('setting');
+		const settingmanage=document.getElementById('setting');
 
-		settingmanage.addEventListener("click", function (event) {
+		settingmanage.addEventListener("click",function(event) {
 			event.preventDefault();
 			fetch('/setting')
 				.then(response => response.text())
 				.then(data => {
-					const mainContent = document.querySelector("#content main");
-					mainContent.innerHTML = data;
+					const mainContent=document.querySelector("#content main");
+					mainContent.innerHTML=data;
 					setting()
 				})
-				.catch(error => console.error('Đã xảy ra lỗi:', error));
+				.catch(error => console.error('Đã xảy ra lỗi:',error));
 		});
 		function setting() {
-			$(document).ready(function () {
-				$("#avatar").click(function () {
+			$(document).ready(function() {
+				$("#avatar").click(function() {
 					$("#myModal").modal("show");
 				});
-				$("#repass").click(function () {
+				$("#repass").click(function() {
 					$("#mk").modal("show");
 				});
-				$("#rename").click(function () {
+				$("#rename").click(function() {
 					$("#modalusername").modal("show");
 				});
-				$("#banking").click(function () {
+				$("#banking").click(function() {
 					$("#modalbank").modal("show");
 				});
-				$("#bankingmanage").click(function () {
+				$("#bankingmanage").click(function() {
 					$("#modalbankmanage").modal("show");
 					fetch("/bank")
 						.then(response => response.json())
 						.then(data => {
 							// Hiển thị danh sách tài khoản ngân hàng trong modal
-							const bankList = $("#bankList");
+							const bankList=$("#bankList");
 							bankList.empty();
 							data.forEach(bank => {
-								const listItem = `<div class="bank-item">
+								const listItem=`<div class="bank-item">
             <div class="info">
               <p>Họ và tên: ${bank.hovaten}</p>
               <p>Phương thức: ${bank.phuongthuc}</p>
@@ -1247,19 +1249,19 @@
 							});
 						})
 						.catch(error => {
-							console.error('Đã xảy ra lỗi khi lấy danh sách tài khoản ngân hàng:', error);
+							console.error('Đã xảy ra lỗi khi lấy danh sách tài khoản ngân hàng:',error);
 							alert('Đã xảy ra lỗi khi lấy danh sách tài khoản ngân hàng.');
 						});
 				});
-				$("#mk form").submit(function (e) {
+				$("#mk form").submit(function(e) {
 					e.preventDefault(); // Ngăn chặn sự kiện mặc định của form
 
 					// Lấy giá trị từ các trường nhập liệu
-					var passOld = $("#passOld").val();
-					var passNew = $("#passNew").val();
+					var passOld=$("#passOld").val();
+					var passNew=$("#passNew").val();
 
 					// Gửi yêu cầu AJAX đến /repass
-					fetch("/repass", {
+					fetch("/repass",{
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
@@ -1271,18 +1273,18 @@
 					})
 						.then(response => response.json())
 						.then(data => {
-							if (data.message) {
+							if(data.message) {
 								alert(data.message);
 								$("#mk").modal("hide");
 							}
 						})
 						.catch(error => {
-							alert("Đã xảy ra lỗi khi đổi mật khẩu: " + error.message);
+							alert("Đã xảy ra lỗi khi đổi mật khẩu: "+error.message);
 						});
 				});
 
 
-				$("#saveButton").click(function () {
+				$("#saveButton").click(function() {
 					$("#mk form").submit();
 				});
 

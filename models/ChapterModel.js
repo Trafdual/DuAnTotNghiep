@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const chapterSchema = new mongoose.Schema({
   mangaName: String,
   number: String,
-  images: [String],
+  content: String,
   viporfree: { type: String, enum: ['vip', 'free'] },
   price: Number,
   isChap: { type: Boolean, default: false },
@@ -13,7 +13,7 @@ const chapterSchema = new mongoose.Schema({
     number: { type: String },
     viporfree: { type: String },
     price: { type: String },
-    images: [String],
+    content: { type: String },
     isChap: { type: Boolean }
   }
 })
